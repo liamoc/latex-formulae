@@ -15,6 +15,9 @@ copyright:           Liam O'Connor, 2015
 category:            Image
 build-type:          Simple
 cabal-version:       >=1.10
+source-repository head
+  type:     git
+  location: https://github.com/liamoc/latex-formulae
 
 library
   exposed-modules:     Image.LaTeX.Render.Pandoc
