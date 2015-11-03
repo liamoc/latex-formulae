@@ -30,7 +30,9 @@ import Control.Monad
 import System.Exit
 import Control.Exception
 import Control.Arrow(second)
-
+import Control.Applicative
+import Data.Monoid
+import Prelude
 
 -- | This type contains all possible errors than can happen while rendering an equation.
 --   It includes all IO errors that can happen as well as more specific errors.
