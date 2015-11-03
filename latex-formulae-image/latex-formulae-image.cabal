@@ -5,8 +5,11 @@ description:         This library provides the basic infrastructure necessary to
                      LaTeX installation. This is useful in particular for showing formulae on websites, where using alternatives
                      like MathJax is not an option (e.g, when you want to use various LaTeX packages that MathJax doesn't support).
                      .
-                     This library requires @latex@, @dvips@ and ImageMagick's @convert@ to be present in the system. It also
-                     uses a few tricks to compute where the baseline is in the image, so these images can be effectively typeset inline
+                     This library requires @latex@, @dvips@ and ImageMagick's @convert@ to be present in the system. @convert@
+                     needs to understand PostScript files.
+                     .
+                     We also
+                     use a few tricks to compute where the baseline is in the image, so these images can be effectively typeset inline
                      with other text.
                      .
                      The companion library to this, @latex-formulae-pandoc@, provides useful tools to integrate this library with pandoc,
