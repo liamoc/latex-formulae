@@ -87,6 +87,9 @@ type Formula = String
 -- | Number of pixels from the bottom of the image to the typesetting baseline. Useful for setting your formulae inline with text.
 type Baseline = Int
 
+hoistE :: Monad m => Either e a -> ExceptT e m a
+hoistE = ExceptT . return
+
 -- | Convert a formula into a JuicyPixels 'DynamicImage', also detecting where the typesetting baseline of the image is.
 imageForFormula :: EnvironmentOptions -> FormulaOptions -> Formula -> IO (Either RenderError (Baseline, DynamicImage))
 imageForFormula (EnvironmentOptions {..}) (FormulaOptions {..}) eqn =
@@ -122,9 +125,9 @@ imageForFormula (EnvironmentOptions {..}) (FormulaOptions {..}) eqn =
       io $ removeFile (tempFileBaseName <.> "ps")
       when (c'' /= ExitSuccess) $ throwE $ IMConvertFailure (o'' ++ "\n" ++ e'')
       imgM <- io $ readImage (tempFileBaseName <.> "png")
-      img <- withExceptT ImageReadError $ hoistEither imgM
+      img <- withExceptT ImageReadError $ hoistE imgM
       io $ removeFile $ tempFileBaseName <.> "png"
-      hoistEither $ postprocess img
+      hoistE $ postprocess img
   where
     io = withExceptT IOException . tryIO
     withTemp a = case tempDir of
