@@ -1,0 +1,19 @@
+* LaTeX Formulae
+
+This is a suite of tools and libraries to make rendering LaTeX equations to images easy from Haskell and Pandoc.
+
+It contains two parts,
+
+- *latex-formulae-image* - A library which uses ~latex~, ~dvips~ and ~convert~ commands to convert a latex formula
+  into an image, and does baseline detection so that the image can be positioned correctly when inline with other text.
+- *latex-formulae-pandoc* - Which provides some functions on ~Pandoc~ documents that renders embedded math to images
+  intended for HTML output. These functions can be easily used to create custom pandoc filters that can be run with 
+  ~pandoc~ as a standalone application. An example executable is provided with the library.
+  The library is capable of storing the images in separate files or embedding them
+  inside the page with data URIs.
+
+These libraries also give you precise control over the DPI of the equation and how the image should be scaled, and can be
+configured to give crisp images even on high DPI displays, like Retina displays.
+
+Because they use just regular LaTeX, any of the packages available to your system LaTeX installation are also available
+to these equations. Just add the necessary ~usepackage~ invocations to the preamble inside your ~LaTeXOptions~ value.
