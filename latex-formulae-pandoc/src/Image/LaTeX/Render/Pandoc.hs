@@ -84,7 +84,7 @@ type NameSupply = IORef Int
 newNameSupply :: IO NameSupply
 newNameSupply = newIORef 0
 
--- | Convert a formula in a pandoc document to an image, embedding the image into the HTML using Data URIs.
+-- | Convert a formula in a pandoc document to an image, storing the images in a separate directory.
 convertFormulaFiles
   :: NameSupply                   -- ^ Unique file name supply. Reuse this for every invocation that shares the same image directory.
   -> FilePath                     -- ^ Name of image directory where images will be stored
@@ -109,6 +109,7 @@ convertFormulaFiles ns bn sh o1 o2 (Math t s) = imageForFormula o1 (o2 t) s >>= 
             " style=\"margin:0; vertical-align:-" ++ show (b `div` sh) ++ "px;\"/>"
 convertFormulaFiles _ _ _ _ _ x = return x
 
+-- | Convert every formula in a pandoc document to an image, storing the images in a separate directory.
 convertAllFormulaeFiles
   :: NameSupply                   -- ^ Unique file name supply. Reuse this for every invocation that shares the same image directory.
   -> FilePath                     -- ^ Name of image directory where images will be stored
