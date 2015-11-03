@@ -137,7 +137,7 @@ Writing the following markdown:
   Enough high school algebra for now!
 #+END_SRC
 
-Leads to [[https://raw.githubusercontent.com/liamoc/latex-formulae/master/example.html][this output]]! Pretty nifty :)
+Leads to [[https://htmlpreview.github.io/?https://github.com/liamoc/latex-formulae/blob/master/example.html][this output]]! Pretty nifty :)
 
 ** Future work
 
