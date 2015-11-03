@@ -1,19 +1,23 @@
+[[https://travis-ci.org/liamoc/latex-formulae][file:https://travis-ci.org/liamoc/latex-formulae.svg]] [[http://haskell.org][file:https://img.shields.io/badge/language-Haskell-blue.svg]] [[https://github.com/liamoc/latex-formulae/blob/master/LICENSE][file:http://img.shields.io/badge/license-BSD3-brightgreen.svg]]
+
 * LaTeX Formulae
 
 This is a suite of tools and libraries to make rendering LaTeX equations to images easy from Haskell and Pandoc.
 
 It contains two parts,
 
-- *latex-formulae-image* - A library which uses ~latex~, ~dvips~ and ~convert~ commands to convert a latex formula
+- *latex-formulae-image* [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-image][file:https://img.shields.io/hackage-deps/v/latex-formulae-image.svg]] - 
+  A library which uses ~latex~, ~dvips~ and ~convert~ commands to convert a latex formula
   into an image, and does baseline detection so that the image can be positioned correctly when inline with other text.
-- *latex-formulae-pandoc* - Which provides some functions on ~Pandoc~ documents that renders embedded math to images
+- *latex-formulae-pandoc* [[http://hackage.haskell.org/package/latex-formulae-pandoc][file:https://img.shields.io/hackage/v/latex-formulae-pandoc.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-pandoc][file:https://img.shields.io/hackage-deps/v/latex-formulae-pandoc.svg]] -  
+  Provides some functions on ~Pandoc~ documents that renders embedded math to images
   intended for HTML output. These functions can be easily used to create custom pandoc filters that can be run with 
   ~pandoc~ as a standalone application. An example executable is provided with the library.
   The library is capable of storing the images in separate files or embedding them
   inside the page with data URIs.
 
-These libraries also give you precise control over the DPI of the equation and how the image should be scaled, and can be
-configured to give crisp images even on high DPI displays, like Retina displays.
+These libraries also give you precise control over the output DPI and over the dimensions of the image in the HTML
+output, so it can be configured to give crisp images even on high DPI displays, like Retina displays.
 
 Because they use just regular LaTeX, any of the packages available to your system LaTeX installation are also available
-to these equations. Just add the necessary ~usepackage~ invocations to the preamble inside your ~LaTeXOptions~ value.
+in these formulae. Just add the necessary ~usepackage~ invocations to the preamble inside your ~LaTeXOptions~ value.
