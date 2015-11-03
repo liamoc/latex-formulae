@@ -106,6 +106,10 @@ The ~latex-formulae-pandoc~ library comes with a simple example filter executabl
 The source code for this program is very simple:
  
 #+BEGIN_SRC haskell
+import Image.LaTeX.Render.Pandoc
+import Image.LaTeX.Render
+import Text.Pandoc.JSON
+
 main :: IO ()
 main = toJSONFilter $ convertFormulaDataURI 2 defaultEnv fopts
  where fopts InlineMath  = math
@@ -115,6 +119,10 @@ main = toJSONFilter $ convertFormulaDataURI 2 defaultEnv fopts
 This filter embeds the images with data URIs. To use files, follow the same routine as above:
 
 #+BEGIN_SRC haskell
+import Image.LaTeX.Render.Pandoc
+import Image.LaTeX.Render
+import Text.Pandoc.JSON
+
 main :: IO ()
 main = do ns <- newNameSupply
           toJSONFilter $ convertFormulaFiles ns "static" 2 defaultEnv fopts
