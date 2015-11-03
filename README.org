@@ -6,12 +6,12 @@ This is a suite of tools and libraries to make rendering LaTeX equations to imag
 
 It contains two parts,
 
-- *latex-formulae-image* [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-image][file:https://img.shields.io/hackage-deps/v/latex-formulae-image.svg]] - 
+- *~latex-formulae-image~* [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-image][file:https://img.shields.io/hackage-deps/v/latex-formulae-image.svg]] - 
   A library which uses LaTeX, ~dvips~ and ImageMagick to convert a latex formula
   into an image, and does baseline detection so that the image can be positioned correctly when inline with other text.
-- *latex-formulae-pandoc* [[http://hackage.haskell.org/package/latex-formulae-pandoc][file:https://img.shields.io/hackage/v/latex-formulae-pandoc.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-pandoc][file:https://img.shields.io/hackage-deps/v/latex-formulae-pandoc.svg]] -  
+- *~latex-formulae-pandoc~* [[http://hackage.haskell.org/package/latex-formulae-pandoc][file:https://img.shields.io/hackage/v/latex-formulae-pandoc.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-pandoc][file:https://img.shields.io/hackage-deps/v/latex-formulae-pandoc.svg]] -  
   Provides some functions on ~Pandoc~ documents that renders embedded math to images
-  intended for HTML output. These functions can be easily used to create custom pandoc filters that can be run with 
+  intended for HTML output. These functions can be easily used to create small pandoc filter programs that can be run with 
   ~pandoc~ as a standalone application. An example executable is provided with the library.
   The library is capable of storing the images in separate files or embedding them
   inside the page with data URIs.
@@ -20,7 +20,7 @@ These libraries also give you precise control over the output DPI and over the d
 output, so it can be configured to give crisp images even on high DPI displays, like Retina displays.
 
 Because they use just regular LaTeX, any of the packages available to your system LaTeX installation are also available
-in these formulae. Just add the necessary ~usepackage~ invocations to the preamble inside your ~LaTeXOptions~ value.
+in these formulae. Just add the necessary ~usepackage~ invocations to the preamble inside your ~FormulaOptions~ value.
 
 ** Requirements
 
@@ -28,4 +28,115 @@ You must have a LaTeX installation available, which includes ~latex~ and ~dvips~
 and must be able to understand PostScript (for example, using ~gs~). Most recent binary distributions of LaTeX and ImageMagick
 satisfy these dependencies.
 
+** Building/Installing
 
+If you're using ~stack~, it should just be a matter of ~stack build~, and ~stack install~ if you want to use the example pandoc filter,
+~latex-formulae-filter~.
+
+Users of ~cabal~ will have to build each package using the usual ~cabal~ ceremony:
+
+#+BEGIN_SRC sh
+  cabal update
+  cabal configure
+  cabal build
+  cabal install
+#+END_SRC
+
+** Using
+
+As always, see the Haddocks for more thorough details. Here are some simple example usages.
+
+*** As a library
+
+**** ~latex-formulae-image~
+
+The ~latex-formulae-image~ package really only has one major function,
+~imageForFormula~. You can use it like so:
+
+#+BEGIN_SRC haskell
+  import Image.LaTeX.Render (imageForFormula, defaultEnv, displaymath)
+  import Codec.Picture (writeDynamicPng) -- JuicyPixels
+  main = do x <- imageforFormula defaultEnv displaymath "y = mx + b"
+            case x of 
+             Left e -> return ()
+             Right (baseline, img) -> do
+               _ <- writeDynamicPng "image.png" img
+               return ()
+#+END_SRC
+
+Settings such as where to find LaTeX etc. can be set by altering the ~EnvironmentOptions~ value, in this case we just use
+~defaultEnv~ defaults. Settings such as the LaTeX environment
+to use, the preamble, and the DPI can be set in the ~FormulaOptions~ value, in this case we use the ~displaymath~ defaults.
+
+**** ~latex-formulae-pandoc~
+
+If you want to integrate with ~pandoc~ programmatically, you can use the ~latex-formulae-pandoc~ package. This package includes
+functions that allow you to transform ~pandoc~ documents. If you're happy to embed the images directly inside the HTML,
+then ~convertAllFormulaeDataURI~ is easiest:
+
+#+BEGIN_SRC haskell
+imagesForFormulae :: Pandoc -> IO Pandoc
+imagesForFormulae doc = convertAllFormulaeDataURI 2 defaultEnv fopts doc
+ where fopts InlineMath  = math
+       fopts DisplayMath = displaymath
+#+END_SRC
+
+The above example function can be inserted between any ~Pandoc~ reader and an HTML writer, producing embedded images inside 
+the HTML output using data URIs.
+
+If you would rather they be stored as separate PNG images in a directory called ~static~, ~convertAllFormulaeFiles~ can be used:
+
+#+BEGIN_SRC haskell
+imagesForFormulae :: Pandoc -> IO Pandoc
+imagesForFormulae doc = do ns <- newNameSupply 
+                           convertAllFormulaeFiles ns "static" 2 defaultEnv fopts doc
+ where fopts InlineMath  = math
+       fopts DisplayMath = displaymath
+#+END_SRC
+
+*** As a pandoc filter
+
+The ~latex-formulae-pandoc~ library comes with a simple example filter executable, called ~latex-formulae-filter~. If you 
+~stack install~ or ~cabal install~ it to your ~$PATH~, you can use it with ~pandoc~ like so:
+
+#+BEGIN_SRC sh
+  pandoc -s --filter=latex-formulae-filter -o output.html input.html
+#+END_SRC sh
+
+The source code for this program is very simple:
+ 
+#+BEGIN_SRC haskell
+main :: IO ()
+main = toJSONFilter $ convertFormulaDataURI 2 defaultEnv fopts
+ where fopts InlineMath  = math
+       fopts DisplayMath = displaymath
+#+END_SRC haskell
+
+This filter embeds the images with data URIs. To use files, follow the same routine as above:
+
+#+BEGIN_SRC haskell
+main :: IO ()
+main = do ns <- newNameSupply
+          toJSONFilter $ convertFormulaFiles ns "static" 2 defaultEnv fopts
+ where fopts InlineMath  = math
+       fopts DisplayMath = displaymath
+#+END_SRC haskell
+
+Adjust the various options by altering the ~math~, ~displaymath~ and ~defaultEnv~ terms in this program, as described in the section above.
+
+** Example/Demo
+
+Writing the following markdown:
+
+#+BEGIN_SRC markdown
+  Lines (that is, $f(x) = mx + b$) are of degree 1, whereas quadratics (that is, $f(x) = ax^2 + bx + c$) 
+  are of degree 2. Solve quadratics with the quadratic formula:
+
+  $$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$
+
+  Enough high school algebra for now!
+#+END_SRC
+
+** Future work
+
+I would like to write a caching library to make it possible to use this system in some sort of website. Right now, invoking ~latex~ on each request would be rather extreme, and slow!
