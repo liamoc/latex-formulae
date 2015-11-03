@@ -6,10 +6,10 @@ This is a suite of tools and libraries to make rendering LaTeX equations to imag
 
 It contains two parts,
 
-- ~latex-formulae-image~ [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-image][file:https://img.shields.io/hackage-deps/v/latex-formulae-image.svg]] - 
+- ~latex-formulae-image~ [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] - 
   A library which uses LaTeX, ~dvips~ and ImageMagick to convert a latex formula
   into an image, and does baseline detection so that the image can be positioned correctly when inline with other text.
-- ~latex-formulae-pandoc~ [[http://hackage.haskell.org/package/latex-formulae-pandoc][file:https://img.shields.io/hackage/v/latex-formulae-pandoc.svg]] [[http://packdeps.haskellers.com/reverse/latex-formulae-pandoc][file:https://img.shields.io/hackage-deps/v/latex-formulae-pandoc.svg]] -  
+- ~latex-formulae-pandoc~ [[http://hackage.haskell.org/package/latex-formulae-pandoc][file:https://img.shields.io/hackage/v/latex-formulae-pandoc.svg]] -
   Provides some functions on ~Pandoc~ documents that renders embedded math to images
   intended for HTML output. These functions can be easily used to create small pandoc filter programs that can be run with 
   ~pandoc~ as a standalone application. An example executable is provided with the library.
