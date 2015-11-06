@@ -3,7 +3,7 @@
 * LaTeX Formulae
 
 This is a suite of tools and libraries to make rendering LaTeX equations to images easy from Haskell and Pandoc. For an example of what they're capable of,
-take a look at [[http://liamoc.net/posts/2015-08-23-verified-compiler.html][articles on my blog]].
+take a look at [[http://liamoc.net/posts/2013-11-13-imperativereasoning.html][articles on my blog]].
 
 It contains two parts,
 
