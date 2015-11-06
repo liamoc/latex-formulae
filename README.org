@@ -19,7 +19,7 @@ It contains three parts,
 - ~latex-formulae-hakyll~ [[http://hackage.haskell.org/package/latex-formulae-hakyll][file:https://img.shields.io/hackage/v/latex-formulae-hakyll.svg]] -
   Provides simple compilers that can be integrated with Hakyll, to render all equations
   in Pandoc-compiled pages inside Hakyll websites. Includes a simple LRU cache so that 
-  the @watch@ server only recompiles changed equations.
+  the ~watch~ server only recompiles changed equations.
 
 These libraries also give you precise control over the output DPI and over the dimensions of the image in the HTML
 output, so it can be configured to give crisp images even on high DPI displays, like Retina displays.
