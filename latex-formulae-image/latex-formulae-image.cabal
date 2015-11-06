@@ -1,5 +1,5 @@
 name:                latex-formulae-image
-version:             0.1.0.1
+version:             0.1.1.0
 synopsis:            A library for rendering LaTeX formulae as images using an actual LaTeX installation
 description:         This library provides the basic infrastructure necessary to convert LaTeX formulae into images, using a real
                      LaTeX installation. This is useful in particular for showing formulae on websites, where using alternatives

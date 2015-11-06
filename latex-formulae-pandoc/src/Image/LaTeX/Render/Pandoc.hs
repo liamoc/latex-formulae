@@ -11,6 +11,13 @@ module Image.LaTeX.Render.Pandoc
        , newNameSupply
          -- * Scaling
        , ShrinkSize
+         -- * Generalised versions
+         -- ** Data URIs
+       , convertFormulaDataURIWith
+       , convertAllFormulaeDataURIWith
+         -- ** Files
+       , convertFormulaFilesWith
+       , convertAllFormulaeFilesWith
        ) where
 
 import Text.Pandoc.Definition
@@ -49,7 +56,25 @@ convertFormulaDataURI
   -> EnvironmentOptions           -- ^ System environment settings
   -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
   -> Inline -> IO Inline
-convertFormulaDataURI sh o1 o2 (Math t s) = imageForFormula o1 (o2 t) s >>= \case
+convertFormulaDataURI sh o1 = convertFormulaDataURIWith (imageForFormula o1) sh
+
+-- | Convert all formulae in a pandoc document to images, embedding the images into the HTML using Data URIs.
+convertAllFormulaeDataURI
+  :: ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
+  -> EnvironmentOptions           -- ^ System environment settings
+  -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
+  -> Pandoc -> IO Pandoc
+convertAllFormulaeDataURI a b c = walkM $ convertFormulaDataURI a b c
+
+-- | A generalisation of 'convertFormulaDataURI' which allows the actual image rendering
+--   function to be customised, so that (e.g) caching can be added or other image processing.
+convertFormulaDataURIWith
+  :: (FormulaOptions -> Formula -> IO (Either RenderError (Baseline, DynamicImage)))
+     -- ^ Function that renders a formula, such as @imageForFormula defaultEnv@
+  -> ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
+  -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
+  -> Inline -> IO Inline
+convertFormulaDataURIWith f sh o (Math t s) = f (o t) s >>= \case
    Left e -> return $ Str (show e)
    Right (b,i) -> let
        Right bs = encodeDynamicPng i
@@ -62,16 +87,17 @@ convertFormulaDataURI sh o1 o2 (Math t s) = imageForFormula o1 (o2 t) s >>= \cas
             " src=\""  ++ dataUri ++ "\"" ++
             " class="  ++ (case t of InlineMath -> "inline-math"; _ -> "display-math") ++
             " style=\"margin:0; vertical-align:-" ++ show (b `div` sh) ++ "px;\"/>"
-convertFormulaDataURI sh o1 o2 x = return x
+convertFormulaDataURIWith _ _ _ x = return x
 
--- | Convert all formulae in a pandoc document to images, embedding the images into the HTML using Data URIs.
-convertAllFormulaeDataURI
-  :: ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
-  -> EnvironmentOptions           -- ^ System environment settings
+-- | A generalisation of 'convertAllFormulaeDataURI' which allows the actual image rendering
+--   function to be customised, so that (e.g) caching can be added or other image processing.
+convertAllFormulaeDataURIWith
+  :: (FormulaOptions -> Formula -> IO (Either RenderError (Baseline, DynamicImage)))
+     -- ^ Function that renders a formula, such as @imageForFormula defaultEnv@
+  -> ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
   -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
   -> Pandoc -> IO Pandoc
-convertAllFormulaeDataURI a b c = walkM $ convertFormulaDataURI a b c 
-
+convertAllFormulaeDataURIWith a b c = walkM $ convertFormulaDataURIWith a b c
 
 -- | If we use files for the images, we need some way of naming the image files we produce
 --   A NameSupply provides us with a source of unique names via an ever-increasing integer.
@@ -84,15 +110,17 @@ type NameSupply = IORef Int
 newNameSupply :: IO NameSupply
 newNameSupply = newIORef 0
 
--- | Convert a formula in a pandoc document to an image, storing the images in a separate directory.
-convertFormulaFiles
+-- | A generalisation of 'convertFormulaFiles' which allows the actual image rendering
+--   function to be customised, so that (e.g) caching can be added or other image processing.
+convertFormulaFilesWith
   :: NameSupply                   -- ^ Unique file name supply. Reuse this for every invocation that shares the same image directory.
   -> FilePath                     -- ^ Name of image directory where images will be stored
   -> ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
-  -> EnvironmentOptions           -- ^ System environment settings
+  -> (FormulaOptions -> Formula -> IO (Either RenderError (Baseline, DynamicImage)))
+     -- ^ Function that renders a formula, such as @imageForFormula defaultEnv@
   -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
   -> Inline -> IO Inline
-convertFormulaFiles ns bn sh o1 o2 (Math t s) = imageForFormula o1 (o2 t) s >>= \case
+convertFormulaFilesWith ns bn sh f o (Math t s) = f (o t) s >>= \case
    Left e -> return $ Str (show e)
    Right (b,i) -> do
      fn <- readIORef ns
@@ -107,7 +135,17 @@ convertFormulaFiles ns bn sh o1 o2 (Math t s) = imageForFormula o1 (o2 t) s >>= 
             " src=\""  ++ uri ++ "\"" ++
             " class="  ++ (case t of InlineMath -> "inline-math"; _ -> "display-math") ++
             " style=\"margin:0; vertical-align:-" ++ show (b `div` sh) ++ "px;\"/>"
-convertFormulaFiles _ _ _ _ _ x = return x
+convertFormulaFilesWith _ _ _ _ _ x = return x
+
+-- | Convert a formula in a pandoc document to an image, storing the images in a separate directory.
+convertFormulaFiles
+  :: NameSupply                   -- ^ Unique file name supply. Reuse this for every invocation that shares the same image directory.
+  -> FilePath                     -- ^ Name of image directory where images will be stored
+  -> ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
+  -> EnvironmentOptions           -- ^ System environment settings
+  -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
+  -> Inline -> IO Inline
+convertFormulaFiles ns fp ss eo = convertFormulaFilesWith ns fp ss (imageForFormula eo)
 
 -- | Convert every formula in a pandoc document to an image, storing the images in a separate directory.
 convertAllFormulaeFiles
@@ -118,3 +156,15 @@ convertAllFormulaeFiles
   -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
   -> Pandoc -> IO Pandoc
 convertAllFormulaeFiles x y a b c = walkM $ convertFormulaFiles x y a b c
+
+-- | A generalisation of 'convertAllFormulaeFiles' which allows the actual image rendering
+--   function to be customised, so that (e.g) caching can be added or other image processing.
+convertAllFormulaeFilesWith
+  :: NameSupply                   -- ^ Unique file name supply. Reuse this for every invocation that shares the same image directory.
+  -> FilePath                     -- ^ Name of image directory where images will be stored
+  -> ShrinkSize                   -- ^ Denominator for all dimensions. Useful for displaying high DPI images in small sizes, for retina displays. Otherwise set to 1.
+  -> (FormulaOptions -> Formula -> IO (Either RenderError (Baseline, DynamicImage)))
+     -- ^ Function that renders a formula, such as @imageForFormula defaultEnv@
+  -> (MathType -> FormulaOptions) -- ^ LaTeX environment settings for each equation type (display and inline)
+  -> Pandoc -> IO Pandoc
+convertAllFormulaeFilesWith x y a b c = walkM $ convertFormulaFilesWith x y a b c

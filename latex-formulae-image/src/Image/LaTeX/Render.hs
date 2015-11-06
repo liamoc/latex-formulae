@@ -43,13 +43,14 @@ data RenderError = ImageIsEmpty -- ^ The equation produced an empty image
                  | IMConvertFailure String -- ^ @convert@ returned a nonzero error code
                  | IOException IOException -- ^ An 'IOException' occurred while managing the temporary files used to convert the equation
                  | ImageReadError String -- ^ The PNG image from ImageMagick could not be read by JuicyPixels.
-                 deriving (Show)
+                 deriving (Show, Eq)
 
 
 data TempDirectoryHandling = UseSystemTempDir { nameTemplate :: String }
                            -- ^ A temporary directory with a name based on the given template will be created in the system temporary files location
                            | UseCurrentDir    { nameTemplate :: String }
                            -- ^ A temporary directory with a name based on the given template will be created in the current directory
+       deriving (Eq, Show, Read, Ord)
 
 data EnvironmentOptions
      = EnvironmentOptions { latexCommand :: String -- ^ Command to use for @latex@, default is @latex@
@@ -61,12 +62,14 @@ data EnvironmentOptions
                           , tempDir :: TempDirectoryHandling -- ^ How to handle temporary files
                           , tempFileBaseName :: String -- ^ The base name to use for the temporary files.
                           }
+       deriving (Eq, Show, Read, Ord)
 
 data FormulaOptions
      = FormulaOptions { preamble :: String -- ^ LaTeX preamble to use. Put your @\usepackage@ commands here.@ commands here.
                        , environment :: String -- ^ LaTeX environment in which the equation will be typeset, usually @math@ or @displaymath@
                        , dpi :: Int -- ^ DPI for the image to be rendered at. ~200 is good for retina displays, ~100 works OK for non-retina displays.
                        }
+       deriving (Eq, Show, Read, Ord)
 
 -- | Use the @amsmath@ package, the @displaymath@ environment, and 200dpi.
 displaymath :: FormulaOptions
