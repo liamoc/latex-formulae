@@ -15,10 +15,10 @@ module Hakyll.Contrib.LaTeX
 import Image.LaTeX.Render
 import Image.LaTeX.Render.Pandoc
 import Text.Pandoc.Definition
-import Control.Memoization.Utils
 import Hakyll.Core.Item
 import Hakyll.Core.Compiler
 import Data.Char
+import qualified Data.Cache.LRU.IO as LRU
 
 -- | Number of formula images to keep in memory during a @watch@ session.
 type CacheSize = Integer
@@ -63,3 +63,15 @@ equationPreview :: String -> String
 equationPreview (dropWhile isSpace -> x)
       | length x <= 16 = x
       | otherwise      = take 16 $ filter (/= '\n') x ++ "..."
+
+memoizeLru :: Ord a => Maybe Integer -> (a -> IO b) -> IO (a -> IO b)
+memoizeLru msize action = do
+    lru <- LRU.newAtomicLRU msize
+    return $ \arg -> do
+        mret <- LRU.lookup arg lru
+        case mret of
+            Just ret -> return ret
+            Nothing -> do
+                ret <- action arg
+                LRU.insert arg ret lru
+                return ret
