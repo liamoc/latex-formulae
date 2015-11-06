@@ -5,7 +5,7 @@
 This is a suite of tools and libraries to make rendering LaTeX equations to images easy from Haskell and Pandoc. For an example of what they're capable of,
 take a look at [[http://liamoc.net/posts/2013-11-13-imperativereasoning.html][articles on my blog]].
 
-It contains two parts,
+It contains three parts,
 
 - ~latex-formulae-image~ [[http://hackage.haskell.org/package/latex-formulae-image][file:https://img.shields.io/hackage/v/latex-formulae-image.svg]] - 
   A library which uses LaTeX, ~dvips~ and ImageMagick to convert a latex formula
@@ -16,6 +16,10 @@ It contains two parts,
   ~pandoc~ as a standalone application. An example executable is provided with the library.
   The library is capable of storing the images in separate files or embedding them
   inside the page with data URIs.
+- ~latex-formulae-hakyll~ [[http://hackage.haskell.org/package/latex-formulae-hakyll][file:https://img.shields.io/hackage/v/latex-formulae-hakyll.svg]] -
+  Provides simple compilers that can be integrated with Hakyll, to render all equations
+  in Pandoc-compiled pages inside Hakyll websites. Includes a simple LRU cache so that 
+  the @watch@ server only recompiles changed equations.
 
 These libraries also give you precise control over the output DPI and over the dimensions of the image in the HTML
 output, so it can be configured to give crisp images even on high DPI displays, like Retina displays.
@@ -96,6 +100,32 @@ There are also more general versions of the ~convertFormula*~ functions, named `
 actual function that does the rendering of formulae to be altered. This is so that you can insert image caching or 
 other image postprocessing into the renderer. 
 
+**** ~latex-formulae-hakyll~
+
+Currently only Data URI embedding is supported for Hakyll, but using it should be as simple as the following
+minimal example:
+
+#+BEGIN_SRC haskell
+main = do
+   renderFormulae <- initFormulaCompilerDataURI 1000 defaultEnv
+   hakyll $
+     match "posts/*.markdown" $ do
+       route $ setExtension "html"
+       compile $ pandocCompilerWithTransformM 
+               $ renderFormulae defaultPandocFormulaOptions
+#+END_SRC
+
+If for whatever reason you don't want to have formula caching for @watch@ servers, you can just use this simpler form:
+
+#+BEGIN_SRC haskell
+main =
+   hakyll $
+     match "posts/*.markdown" $ do
+       route $ setExtension "html"
+       compile $ pandocCompilerWithTransformM
+               $ compileFormulaeDataURI defaultEnv defaultPandocFormulaOptions
+#+END_SRC
+
 *** As a pandoc filter
 
 The ~latex-formulae-pandoc~ library comes with a simple example filter executable, called ~latex-formulae-filter~. If you 
@@ -149,4 +179,4 @@ Leads to [[https://htmlpreview.github.io/?https://github.com/liamoc/latex-formul
 
 ** Future work
 
-I would like to add support for Hakyll websites.
+I would like to add files support for Hakyll websites, but it's not clear how this would interact with Hakyll's compiler system.
