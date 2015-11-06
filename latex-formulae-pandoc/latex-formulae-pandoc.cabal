@@ -1,5 +1,5 @@
 name:                latex-formulae-pandoc
-version:             0.2.0.0
+version:             0.2.0.1
 synopsis:            Render LaTeX formulae in pandoc documents to images with an actual LaTeX installation
 description:         This library provides utility functions to convert LaTeX equations to images in Pandoc documents using the @latex-formulae-image@ package.
                      It requires an actual LaTeX installation to work (@latex@,@dvips@), along with ImageMagick's @convert@ (which needs to understand PostScript)

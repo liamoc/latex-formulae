@@ -97,7 +97,7 @@ convertFormulaDataURIWith
   -> PandocFormulaOptions -- ^ Formula display settings
   -> Inline -> IO Inline
 convertFormulaDataURIWith f o (Math t s) = f (formulaOptions o t) s >>= \case
-   Left e -> return $ Str (show e)
+   Left e -> return $ errorDisplay o e
    Right (b,i) -> let
        Right bs = encodeDynamicPng i
        dataUri = "data:image/png;base64," ++ BS.unpack (B64.encode bs)
@@ -141,7 +141,7 @@ convertFormulaFilesWith
   -> PandocFormulaOptions         -- ^ Formula display settings
   -> Inline -> IO Inline
 convertFormulaFilesWith f ns bn o (Math t s) = f (formulaOptions o t) s >>= \case
-   Left e -> return $ Str (show e)
+   Left e -> return $ errorDisplay o e
    Right (b,i) -> do
      fn <- readIORef ns
      modifyIORef ns (+1)
@@ -194,7 +194,7 @@ hideError = const $ Str blank
 
 -- | Render errors nicely, in order to show any problems clearly, with all information intact.
 displayError :: RenderError -> Inline
-displayError ImageIsEmpty           = pandocError  [Str "The rendered image was empty"]
+displayError ImageIsEmpty           = pandocError [Str "The rendered image was empty"]
 displayError CannotDetectBaseline   = pandocError [Str "Cannot detect baseline in rendered image"]
 displayError (LaTeXFailure str)     = pandocError [Str "LaTeX failed:", LineBreak, Code nullAttr str]
 displayError (DVIPSFailure str)     = pandocError [Str "DVIPS failed:", LineBreak, Code nullAttr str]
