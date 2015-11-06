@@ -186,11 +186,11 @@ convertAllFormulaeFilesWith
   -> Pandoc -> IO Pandoc
 convertAllFormulaeFilesWith x y a = walkM . convertFormulaFilesWith x y a
 
--- | Render all errors simply as 🗙
+-- | Render all errors simply as "Error"
 hideError :: RenderError -> Inline
 hideError = const $ Str blank
   where
-    blank = "🗙"
+    blank = "Error"
 
 -- | Render errors nicely, in order to show any problems clearly, with all information intact.
 displayError :: RenderError -> Inline
