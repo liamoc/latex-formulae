@@ -19,6 +19,8 @@ import Hakyll.Core.Item
 import Hakyll.Core.Compiler
 import Data.Char
 import qualified Data.Cache.LRU.IO as LRU
+import Control.Applicative
+import Prelude
 
 -- | Number of formula images to keep in memory during a @watch@ session.
 type CacheSize = Integer
