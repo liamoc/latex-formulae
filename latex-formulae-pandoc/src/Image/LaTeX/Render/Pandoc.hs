@@ -105,10 +105,21 @@ convertFormulaDataURIWith f o (Math t s) = f (formulaOptions o t) s >>= \case
        (w,h) = (ow `div` shrinkBy o, oh `div` shrinkBy o)
      in return $ RawInline (Format "html") $
         "<img width="  ++ show w ++
+            " alt=\"" ++ processAltString s ++ "\"" ++
             " height=" ++ show h ++
             " src=\""  ++ dataUri ++ "\"" ++
             " class="  ++ (case t of InlineMath -> "inline-math"; _ -> "display-math") ++
             " style=\"margin:0; vertical-align:-" ++ show (b `div` shrinkBy o) ++ "px;\"/>"
+   where processAltString = (>>= \case
+                 '<'  -> "&lt;"
+                 '>'  -> "&gt;"
+                 '&'  -> "&amp;"
+                 '"'  -> "&quot;"
+                 '\'' -> "&39;"
+                 '\n' -> " "
+                 '\r' -> " "
+                 '\t' -> " "
+                 x    -> [x])
 convertFormulaDataURIWith _ _ x = return x
 
 -- | A generalisation of 'convertAllFormulaeDataURI' which allows the actual image rendering
