@@ -66,9 +66,9 @@ data EnvironmentOptions
 
 data FormulaOptions
      = FormulaOptions { preamble :: String -- ^ LaTeX preamble to use. Put your @\usepackage@ commands here.@ commands here.
-                       , environment :: String -- ^ LaTeX environment in which the equation will be typeset, usually @math@ or @displaymath@
-                       , dpi :: Int -- ^ DPI for the image to be rendered at. ~200 is good for retina displays, ~100 works OK for non-retina displays.
-                       }
+                      , environment :: String -- ^ LaTeX environment in which the equation will be typeset, usually @math@ or @displaymath@
+                      , dpi :: Int -- ^ DPI for the image to be rendered at. ~200 is good for retina displays, ~100 works OK for non-retina displays.
+                      }
        deriving (Eq, Show, Read, Ord)
 
 -- | Use the @amsmath@ package, the @displaymath@ environment, and 200dpi.
