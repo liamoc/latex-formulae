@@ -35,13 +35,13 @@ type CacheSize = Integer
 -- >           compile $ pandocCompilerWithTransformM (renderFormulae defaultPandocFormulaOptions)
 --
 initFormulaCompilerDataURI :: CacheSize -> EnvironmentOptions
-                           -> IO (PandocFormulaOptions -> Item Pandoc -> Compiler (Item Pandoc))
+                           -> IO (PandocFormulaOptions -> Pandoc -> Compiler Pandoc)
 initFormulaCompilerDataURI cs eo = do
     mImageForFormula <- curry <$> memoizeLru (Just cs) (uncurry drawFormula)
     let eachFormula x y = do
           putStrLn $ "    formula (" ++ environment x ++ ") \"" ++ equationPreview y ++ "\""
           mImageForFormula x y
-    return $ \fo -> withItemBody $ unsafeCompiler . convertAllFormulaeDataURIWith eachFormula fo
+    return $ \fo -> unsafeCompiler . convertAllFormulaeDataURIWith eachFormula fo
   where
     drawFormula x y = do
       putStrLn "      drawing..."
@@ -53,13 +53,13 @@ initFormulaCompilerDataURI cs eo = do
 --
 compileFormulaeDataURI :: EnvironmentOptions
                        -> PandocFormulaOptions
-                       -> Item Pandoc -> Compiler (Item Pandoc)
+                       -> Pandoc -> Compiler Pandoc
 compileFormulaeDataURI eo po =
     let eachFormula x y = do
           putStrLn $ "    formula (" ++ environment x ++ ") \"" ++ equationPreview y ++ "\""
           putStrLn   "      drawing..."
           imageForFormula eo x y
-    in withItemBody $ unsafeCompiler . convertAllFormulaeDataURIWith eachFormula po
+    in unsafeCompiler . convertAllFormulaeDataURIWith eachFormula po
 
 equationPreview :: String -> String
 equationPreview (dropWhile isSpace -> x)
