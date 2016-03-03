@@ -111,7 +111,7 @@ main = do
    hakyll $
      match "posts/*.markdown" $ do
        route $ setExtension "html"
-       compile $ pandocCompilerWithTransformM 
+       compile $ pandocCompilerWithTransformM defaultHakyllReaderOptions defaultHakyllWriterOptions
                $ renderFormulae defaultPandocFormulaOptions
 #+END_SRC
 
@@ -122,7 +122,7 @@ main =
    hakyll $
      match "posts/*.markdown" $ do
        route $ setExtension "html"
-       compile $ pandocCompilerWithTransformM
+       compile $ pandocCompilerWithTransformM defaultHakyllReaderOptions defaultHakyllWriterOptions
                $ compileFormulaeDataURI defaultEnv defaultPandocFormulaOptions
 #+END_SRC
 
