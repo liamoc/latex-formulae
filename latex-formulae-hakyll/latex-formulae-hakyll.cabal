@@ -26,7 +26,7 @@ library
   exposed-modules:     Hakyll.Contrib.LaTeX
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.9
+  build-depends:       base >=4.7 && <4.10
                ,       latex-formulae-image >= 0.1.1.0  && < 0.2  
                ,       latex-formulae-pandoc >= 0.2.0.1 && < 0.3
                ,       hakyll >= 4.6 && < 4.9
