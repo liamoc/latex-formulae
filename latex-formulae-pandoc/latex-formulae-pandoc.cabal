@@ -1,5 +1,5 @@
 name:                latex-formulae-pandoc
-version:             0.2.0.4
+version:             0.2.0.5
 synopsis:            Render LaTeX formulae in pandoc documents to images with an actual LaTeX installation
 description:         This library provides utility functions to convert LaTeX equations to images in Pandoc documents using the @latex-formulae-image@ package.
                      It requires an actual LaTeX installation to work (@latex@,@dvips@), along with ImageMagick's @convert@ (which needs to understand PostScript)
@@ -22,10 +22,10 @@ source-repository head
 library
   exposed-modules:     Image.LaTeX.Render.Pandoc
   build-depends:       base >=4.7 && <5
-                     , pandoc-types >= 1.12 && < 1.17 
+                     , pandoc-types >= 1.12 && < 1.18 
                      , latex-formulae-image >= 0.1 && < 0.2
                      , JuicyPixels >= 3.2 && < 3.3
-                     , directory >= 1.2 && < 1.3
+                     , directory >= 1.2 && < 1.4
                      , filepath >= 1.3 && < 1.5
                      , base64-bytestring >= 1.0 && < 1.1
                      , bytestring >= 0.10 && <0.11
@@ -38,7 +38,7 @@ executable latex-formulae-filter
   main-is:             Main.hs
   ghc-options:         -Wall
   build-depends:       base >=4.7 && <5, latex-formulae-pandoc
-                     , pandoc-types >= 1.12 && < 1.17
+                     , pandoc-types >= 1.12 && < 1.18
                      , latex-formulae-image >= 0.1 && < 0.2
   default-language:    Haskell2010
    
