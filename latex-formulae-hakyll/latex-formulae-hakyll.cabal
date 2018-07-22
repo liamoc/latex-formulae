@@ -2,7 +2,7 @@
 -- further documentation, see http://haskell.org/cabal/users-guide/
 
 name:                latex-formulae-hakyll
-version:             0.2.0.3
+version:             0.2.0.4
 synopsis:            Use actual LaTeX to render formulae inside Hakyll pages
 description:         This library provides functions to render all math formulae inside Pandoc-processed Hakyll pages using
                      real LaTeX.
