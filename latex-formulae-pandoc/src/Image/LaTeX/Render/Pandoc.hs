@@ -13,6 +13,7 @@ module Image.LaTeX.Render.Pandoc
        , PandocFormulaOptions(..)
        , ShrinkSize
        , defaultPandocFormulaOptions
+       , customize
          -- ** Error display functions
        , hideError
        , displayError
@@ -31,6 +32,7 @@ import Image.LaTeX.Render
 import Codec.Picture
 import Control.Applicative
 import Data.IORef
+import Data.Semigroup
 import System.FilePath
 
 import qualified Data.ByteString.Base64.Lazy as B64
@@ -69,6 +71,11 @@ defaultPandocFormulaOptions = PandocFormulaOptions
    , errorDisplay = displayError
    , formulaOptions = \case DisplayMath -> displaymath; _ -> math
    }
+
+-- | Appends custom 'FormluaOptions' to preamble.
+customize :: PandocFormulaOptions -> FormulaOptions -> PandocFormulaOptions
+customize pfo@(PandocFormulaOptions _ _ fo) opts =
+    pfo { formulaOptions = \mathtype -> (fo mathtype) <> opts }
 
 -- | Denominator for various dimensions. For high DPI displays, it can be useful to use values of 2 or 4, so that the dimensions
 --   of the image are a fraction of the actual image size, and the image appears more crisp. Otherwise, a value of 1 will always
