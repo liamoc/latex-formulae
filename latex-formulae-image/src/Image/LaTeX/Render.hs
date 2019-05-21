@@ -14,6 +14,7 @@ module Image.LaTeX.Render
        , FormulaOptions (..)
        , displaymath
        , math
+       , mathColour
        )
        where
 
@@ -31,7 +32,7 @@ import System.Exit
 import Control.Exception
 import Control.Arrow(second)
 import Control.Applicative
-import Data.Monoid
+import Data.Semigroup
 import Prelude
 
 -- | This type contains all possible errors than can happen while rendering an equation.
@@ -78,6 +79,26 @@ displaymath = FormulaOptions "\\usepackage{amsmath}" "displaymath" 200
 -- | Use the @amsmath@ package, the @math@ environment, and 200dpi.
 math :: FormulaOptions
 math = FormulaOptions "\\usepackage{amsmath}\\usepackage{amsfonts}\\usepackage{stmaryrd}" "math" 200
+
+instance Semigroup FormulaOptions where
+    a <> b = FormulaOptions
+               (preamble a <> preamble b)
+               (environment a)
+               (max (dpi a) (dpi b))
+
+-- | Append this to 'FormulaOptions' to change math rendering colour to 'colour'.
+-- e.g. mathColour "ff0000"
+mathColour :: String -> FormulaOptions
+mathColour colour = FormulaOptions
+    ("\\usepackage{xcolor}\
+    \\\definecolor{fg}{HTML}{"
+    ++ colour ++
+    "}\\everymath\\expandafter{\
+    \\\the\\everymath \\color{fg}}\
+    \\\everydisplay\\expandafter{\
+    \\\the\\everydisplay \\color{fg}}")
+    ""
+    0
 
 -- | Sensible defaults for system environments. Works if @dvips@, @convert@, and @latex@ are recent enough and in your @$PATH@.
 defaultEnv :: EnvironmentOptions
