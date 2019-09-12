@@ -26,11 +26,11 @@ library
   exposed-modules:     Hakyll.Contrib.LaTeX
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.12
-               ,       latex-formulae-image >= 0.1.1.0  && < 0.2  
+  build-depends:       base >=4.7 && <4.13
+               ,       latex-formulae-image >= 0.1.1.0  && < 0.2
                ,       latex-formulae-pandoc >= 0.2.0.1 && < 0.3
-               ,       hakyll >= 4.6 && < 4.13
-               ,       pandoc-types >= 1.12 && < 1.18
+               ,       hakyll >= 4.6 && < 4.14
+               ,       pandoc-types >= 1.12 && < 1.20
                ,       lrucache >= 1.2 && <1.3
   hs-source-dirs:      src
   default-language:    Haskell2010
